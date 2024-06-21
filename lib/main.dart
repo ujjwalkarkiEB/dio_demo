@@ -12,6 +12,7 @@ void main() async {
 
   // Initialize TokenManager
   final tokenManager = TokenManager();
+  // await tokenManager.clearTokens();
 
   // Check if token exists
   final isAcessTokenPresent = await tokenManager.checkIfAccessTokenPresent();

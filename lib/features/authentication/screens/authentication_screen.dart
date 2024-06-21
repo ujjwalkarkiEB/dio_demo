@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/bloc/auth_bloc.dart';
 import 'package:flutter_dio_sample/features/home/home_screen.dart';
 import 'package:flutter_dio_sample/widgets/error_snackbar.dart';
+import 'package:flutter_dio_sample/widgets/success_snackbar.dart';
 import 'package:gap/gap.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -29,6 +30,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
+          if (isSignUp) {
+            showSuccessSnackbar(
+                context, 'Account has been created successfully!');
+            return;
+          }
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -175,20 +181,19 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           child: ElevatedButton(onPressed: () {
                             if (formKey.currentState!.validate()) {
                               formKey.currentState!.save();
-                              if (psw != repeatPsw) {
-                                showFlashError(
-                                    context, 'Password donot match!');
-                                return;
-                              }
-
                               if (isSignUp) {
+                                if (psw != repeatPsw) {
+                                  showFlashError(
+                                      context, 'Password donot match!');
+                                  return;
+                                }
                                 context.read<AuthBloc>().add(
                                     AuthSignUpButtonPressed(
                                         userName: userName,
                                         email: email,
                                         password: psw));
-                                return;
                               }
+
                               context.read<AuthBloc>().add(
                                   AuthSignInButtonPressed(
                                       email: email, password: psw));
@@ -196,7 +201,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           }, child: BlocBuilder<AuthBloc, AuthState>(
                             builder: (context, state) {
                               if (state is AuthLoading) {
-                                return const CircularProgressIndicator();
+                                return const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator());
                               }
                               return Text(isSignUp ? 'SIGN UP' : 'LOGIN');
                             },
