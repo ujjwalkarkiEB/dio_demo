@@ -22,13 +22,18 @@ class AuthInterceptor extends Interceptor {
 
   @override
   Future onError(DioException err, ErrorInterceptorHandler handler) async {
+    // 401 -> unauthorized access error
     if (err.response?.statusCode == 401) {
       try {
+        // get new accesstoken
         String newAccesToken = await getRefreshToken();
+        // store locally
         TokenManager().setRefreshToken(newAccesToken);
-
+        // add new token to the request header
         final reqOption = err.requestOptions;
         reqOption.headers['Authentication'] = 'Bearer $newAccesToken';
+
+        // retry the failed request simply by cloning it
         return handler.resolve(await DioClient().client.request(reqOption.path,
             options:
                 Options(method: reqOption.method, headers: reqOption.headers),
