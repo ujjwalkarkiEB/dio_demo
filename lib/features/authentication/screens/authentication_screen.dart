@@ -43,7 +43,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
               (router) => false);
         }
         if (state is AuthError) {
-          showFlashError(context, state.errorMsg);
+          showFlashError(context, 'Your credentials donot match our records !');
         }
       },
       child: Scaffold(
@@ -198,6 +198,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                   AuthSignInButtonPressed(
                                       email: email, password: psw));
                             }
+                            formKey.currentState!.reset();
                           }, child: BlocBuilder<AuthBloc, AuthState>(
                             builder: (context, state) {
                               if (state is AuthLoading) {
