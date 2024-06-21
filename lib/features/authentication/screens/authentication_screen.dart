@@ -36,6 +36,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
               ),
               (router) => false);
         }
+        if (state is AuthError) {
+          showFlashError(context, state.errorMsg);
+        }
       },
       child: Scaffold(
         body: Padding(
@@ -169,30 +172,35 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       const Gap(10),
                       Align(
                           alignment: Alignment.bottomRight,
-                          child: ElevatedButton(
-                              onPressed: () {
-                                if (formKey.currentState!.validate()) {
-                                  formKey.currentState!.save();
-                                  if (psw != repeatPsw) {
-                                    showFlashError(
-                                        context, 'Password donot match!');
-                                    return;
-                                  }
+                          child: ElevatedButton(onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              formKey.currentState!.save();
+                              if (psw != repeatPsw) {
+                                showFlashError(
+                                    context, 'Password donot match!');
+                                return;
+                              }
 
-                                  if (isSignUp) {
-                                    context.read<AuthBloc>().add(
-                                        AuthSignUpButtonPressed(
-                                            userName: userName,
-                                            email: email,
-                                            password: psw));
-                                    return;
-                                  }
-                                  context.read<AuthBloc>().add(
-                                      AuthSignInButtonPressed(
-                                          email: email, password: psw));
-                                }
-                              },
-                              child: Text(isSignUp ? 'SIGN UP' : 'LOGIN')))
+                              if (isSignUp) {
+                                context.read<AuthBloc>().add(
+                                    AuthSignUpButtonPressed(
+                                        userName: userName,
+                                        email: email,
+                                        password: psw));
+                                return;
+                              }
+                              context.read<AuthBloc>().add(
+                                  AuthSignInButtonPressed(
+                                      email: email, password: psw));
+                            }
+                          }, child: BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              if (state is AuthLoading) {
+                                return const CircularProgressIndicator();
+                              }
+                              return Text(isSignUp ? 'SIGN UP' : 'LOGIN');
+                            },
+                          )))
                     ],
                   ),
                 ),
