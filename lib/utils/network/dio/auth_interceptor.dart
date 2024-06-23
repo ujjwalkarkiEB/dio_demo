@@ -28,13 +28,14 @@ class AuthInterceptor extends Interceptor {
       try {
         // get new accesstoken
         String? newAccesToken = await getRefreshToken();
-        if (newAccesToken != null) {}
+        if (newAccesToken != null) {
+          err.requestOptions.headers['Authentication'] =
+              'Bearer $newAccesToken';
 
-        err.requestOptions.headers['Authentication'] = 'Bearer $newAccesToken';
-
-        // retry the failed request with new access token attached to request header
-        return handler
-            .resolve(await DioClient().client.fetch(err.requestOptions));
+          // retry the failed request with new access token attached to request header
+          return handler
+              .resolve(await DioClient().client.fetch(err.requestOptions));
+        }
       } catch (e) {
         return handler.next(err);
       }
