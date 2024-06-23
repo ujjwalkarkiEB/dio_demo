@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/services/api_service.dart';
 import 'package:flutter_dio_sample/features/model/user.dart';
 import 'package:meta/meta.dart';
@@ -10,6 +11,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<AuthSignUpButtonPressed>(_onSignupPressed);
     on<AuthSignInButtonPressed>(_onSignInPressed);
+    on<AuthLogoutRequested>(
+        (AuthLogoutRequested event, Emitter<AuthState> emit) {
+      emit(AuthLogout());
+    });
   }
 
   void _onSignupPressed(

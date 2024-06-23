@@ -20,3 +20,5 @@ final class AuthSignInButtonPressed extends AuthEvent {
 
   AuthSignInButtonPressed({required this.email, required this.password});
 }
+
+final class AuthLogoutRequested extends AuthEvent {}

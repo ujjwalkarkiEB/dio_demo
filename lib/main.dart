@@ -12,9 +12,8 @@ void main() async {
 
   // Initialize TokenManager
   final tokenManager = TokenManager();
-  // await tokenManager.clearTokens();
 
-  // Check if token exists
+  // Check if access token exists
   final isAcessTokenPresent = await tokenManager.checkIfAccessTokenPresent();
   runApp(MyApp(isAcessTokenPresent: isAcessTokenPresent));
 }
@@ -27,15 +26,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLogout) {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => const AuthenticationScreen(),
+                ),
+                (route) => false);
+          }
+        },
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home: isAcessTokenPresent
+              ? const HomeScreen()
+              : const AuthenticationScreen(),
         ),
-        home: isAcessTokenPresent
-            ? const HomeScreen()
-            : const AuthenticationScreen(),
       ),
     );
   }

@@ -1,20 +1,30 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dio_sample/utils/network/dio/auth_interceptor.dart';
+
+import 'auth_interceptor.dart';
 
 class DioClient {
+  // Static instance of DioClient
+  static final DioClient _instance = DioClient._();
+
+  // Dio instance
   final Dio _client;
 
-  // Constructor to initialize DioClient with optional baseUrl
-  DioClient({String baseUrl = 'http://10.0.2.2:8000/api/'})
-      : _client = Dio(BaseOptions(baseUrl: baseUrl)) {
+  // Private constructor
+  DioClient._()
+      : _client = Dio(BaseOptions(
+            baseUrl: 'http://10.0.2.2:8000/api/',
+            connectTimeout: const Duration(seconds: 6000),
+            receiveTimeout: const Duration(seconds: 6000),
+            contentType: 'application/json',
+            responseType: ResponseType.json)) {
     _client.interceptors.add(AuthInterceptor());
   }
 
-  // Public getter to access the Dio client
-  Dio get client => _client;
-
-  // Method to add interceptors
-  void addInterceptor(Interceptor interceptor) {
-    _client.interceptors.add(interceptor);
+  // Factory constructor to return the same DioClient instance
+  factory DioClient() {
+    return _instance;
   }
+
+  // Getter to access the Dio client
+  Dio get client => _client;
 }

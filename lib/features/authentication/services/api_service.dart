@@ -6,24 +6,24 @@ import 'package:flutter_dio_sample/utils/network/helper/token_manager.dart';
 import '../../model/user.dart';
 
 class ApiService {
-  ApiService._() {
-    dioClient.addInterceptor(AuthInterceptor());
-  }
+  ApiService._();
 
   static final ApiService _instance = ApiService._();
   factory ApiService() => _instance;
 
-  final DioClient dioClient = DioClient();
+  final Dio dioClient = DioClient().client;
 
   Future<void> login(User user) async {
     try {
-      final response = await dioClient.client.post(
+      final response = await dioClient.post(
         'account/login',
         data: {'email': user.email, 'password': user.password},
       );
 
       final accessToken = response.data['accessToken'];
+      final refreshToken = response.data['refreshToken'];
       await TokenManager().setAccessToken(accessToken);
+      await TokenManager().setRefreshToken(refreshToken);
     } on DioException catch (e) {
       if (e.response != null) {
         print(
@@ -41,7 +41,7 @@ class ApiService {
 
   Future<void> register(User user) async {
     try {
-      await dioClient.client.post(
+      await dioClient.post(
         'account/register',
         data: {
           'userName': user.userName!,
