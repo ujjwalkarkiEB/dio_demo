@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/services/api_service.dart';
 import 'package:flutter_dio_sample/features/model/user.dart';
+import 'package:flutter_dio_sample/utils/network/helper/token_manager.dart';
 import 'package:meta/meta.dart';
 
 part 'auth_event.dart';
@@ -11,17 +12,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<AuthSignUpButtonPressed>(_onSignupPressed);
     on<AuthSignInButtonPressed>(_onSignInPressed);
-    on<AuthLogoutRequested>(
-        (AuthLogoutRequested event, Emitter<AuthState> emit) {
-      emit(AuthLogout());
-    });
+    on<AuthLogoutRequested>(_logoutEventOcurred);
+  }
+
+  void _logoutEventOcurred(
+      AuthLogoutRequested event, Emitter<AuthState> emit) async {
+    await TokenManager().clearTokens();
+    emit(AuthLogout());
   }
 
   void _onSignupPressed(
-      AuthSignUpButtonPressed event, Emitter<AuthState> emit) {
+      AuthSignUpButtonPressed event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      ApiService().register(User(
+      await ApiService().register(User(
           userName: event.userName,
           email: event.email,
           password: event.password));
