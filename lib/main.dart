@@ -4,6 +4,7 @@ import 'package:flutter_dio_sample/features/authentication/bloc/auth_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/screens/authentication_screen.dart';
 import 'package:flutter_dio_sample/features/home/bloc/home_bloc.dart';
 import 'package:flutter_dio_sample/features/home/home_screen.dart';
+import 'package:flutter_dio_sample/utils/network/dio/dio_client.dart';
 
 import 'utils/network/helper/token_manager.dart';
 

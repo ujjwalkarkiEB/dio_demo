@@ -55,7 +55,7 @@ Future<String?> getRefreshToken(BuildContext ctx) async {
     final refreshToken = await TokenManager().getRefreshToken();
     final response = await DioClient()
         .client
-        .post('account/token/refre', data: {'refreshToken': refreshToken});
+        .post('account/token/refresh', data: {'refreshToken': refreshToken});
     final newAccessToken = response.data['data']['accessToken'];
 
     TokenManager().setAccessToken(newAccessToken);
