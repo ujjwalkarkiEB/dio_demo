@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import 'auth_interceptor.dart';
 
@@ -16,9 +17,7 @@ class DioClient {
             connectTimeout: const Duration(seconds: 6000),
             receiveTimeout: const Duration(seconds: 6000),
             contentType: 'application/json',
-            responseType: ResponseType.json)) {
-    _client.interceptors.add(AuthInterceptor());
-  }
+            responseType: ResponseType.json));
 
   // Factory constructor to return the same DioClient instance
   factory DioClient() {
@@ -27,4 +26,7 @@ class DioClient {
 
   // Getter to access the Dio client
   Dio get client => _client;
+  void setupInterceptors(BuildContext context) {
+    _client.interceptors.add(AuthInterceptor(context: context));
+  }
 }

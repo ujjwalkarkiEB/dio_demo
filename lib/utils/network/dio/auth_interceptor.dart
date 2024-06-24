@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/bloc/auth_bloc.dart';
 import 'package:flutter_dio_sample/utils/network/dio/dio_client.dart';
 import 'package:flutter_dio_sample/utils/network/helper/token_manager.dart';
 
 class AuthInterceptor extends Interceptor {
+  final BuildContext context;
+
+  AuthInterceptor({required this.context});
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
@@ -28,7 +33,7 @@ class AuthInterceptor extends Interceptor {
       print('--------------token refresh is processing ---------');
       try {
         // get new accesstoken
-        String? newAccesToken = await getRefreshToken();
+        String? newAccesToken = await getRefreshToken(context);
         if (newAccesToken != null) {
           err.requestOptions.headers['Authentication'] =
               'Bearer $newAccesToken';
@@ -45,20 +50,23 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
-Future<String?> getRefreshToken() async {
+Future<String?> getRefreshToken(BuildContext ctx) async {
   try {
     final refreshToken = await TokenManager().getRefreshToken();
     final response = await DioClient()
         .client
-        .post('account/token/refresh', data: {'refreshToken': refreshToken});
+        .post('account/token/refre', data: {'refreshToken': refreshToken});
     final newAccessToken = response.data['data']['accessToken'];
 
     TokenManager().setAccessToken(newAccessToken);
     return newAccessToken;
   } catch (e) {
     print('failed to get token: ${e.toString()}');
-    TokenManager().clearTokens();
-    AuthBloc().add(AuthLogoutRequested());
+    await TokenManager().clearTokens();
+    if (!ctx.mounted) {
+      return null;
+    }
+    ctx.read<AuthBloc>().add(AuthLogoutRequested());
   }
   return null;
 }

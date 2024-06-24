@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/bloc/auth_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/screens/authentication_screen.dart';
+import 'package:flutter_dio_sample/features/home/bloc/home_bloc.dart';
 import 'package:flutter_dio_sample/features/home/home_screen.dart';
 
 import 'utils/network/helper/token_manager.dart';
@@ -24,31 +25,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc(),
-      child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthLogout) {
-            // logging out user on failed accesstoken request
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const AuthenticationScreen(),
-              ),
-              (route) => false,
-            );
-          }
-        },
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: isAcessTokenPresent
-              ? const HomeScreen()
-              : const AuthenticationScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()),
+        BlocProvider(create: (context) => HomeBloc()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
+        home: isAcessTokenPresent
+            ? const HomeScreen()
+            : const AuthenticationScreen(),
       ),
     );
   }
