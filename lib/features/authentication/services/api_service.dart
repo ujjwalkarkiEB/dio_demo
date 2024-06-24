@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dio_sample/utils/network/dio/auth_interceptor.dart';
 import 'package:flutter_dio_sample/utils/network/dio/dio_client.dart';
 import 'package:flutter_dio_sample/utils/network/helper/token_manager.dart';
 
-import '../../model/user.dart';
+import '../model/user.dart';
 
 class ApiService {
   ApiService._();

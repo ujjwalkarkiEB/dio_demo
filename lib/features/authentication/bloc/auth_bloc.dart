@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dio_sample/features/authentication/services/api_service.dart';
-import 'package:flutter_dio_sample/features/model/user.dart';
+import 'package:flutter_dio_sample/features/authentication/model/user.dart';
 import 'package:flutter_dio_sample/utils/network/helper/token_manager.dart';
 import 'package:meta/meta.dart';
 

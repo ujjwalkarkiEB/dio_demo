@@ -26,15 +26,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(),
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLogout) {
+            // logging out user on failed accesstoken request
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const AuthenticationScreen(),
+              ),
+              (route) => false,
+            );
+          }
+        },
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home: isAcessTokenPresent
+              ? const HomeScreen()
+              : const AuthenticationScreen(),
         ),
-        home: isAcessTokenPresent
-            ? const HomeScreen()
-            : const AuthenticationScreen(),
       ),
     );
   }

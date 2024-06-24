@@ -25,6 +25,7 @@ class AuthInterceptor extends Interceptor {
   Future onError(DioException err, ErrorInterceptorHandler handler) async {
     // 401 -> unauthorized access error
     if (err.response?.statusCode == 401) {
+      print('--------------token refresh is processing ---------');
       try {
         // get new accesstoken
         String? newAccesToken = await getRefreshToken();
@@ -46,14 +47,16 @@ class AuthInterceptor extends Interceptor {
 
 Future<String?> getRefreshToken() async {
   try {
-    final refreshToken = TokenManager().getRefreshToken();
+    final refreshToken = await TokenManager().getRefreshToken();
     final response = await DioClient()
         .client
         .post('account/token/refresh', data: {'refreshToken': refreshToken});
-    final newAccessToken = response.data['accessToken'];
+    final newAccessToken = response.data['data']['accessToken'];
+
     TokenManager().setAccessToken(newAccessToken);
     return newAccessToken;
   } catch (e) {
+    print('failed to get token: ${e.toString()}');
     TokenManager().clearTokens();
     AuthBloc().add(AuthLogoutRequested());
   }
